@@ -1,0 +1,250 @@
+
+<nav class="navbar navbar-expand-xl">
+    <div class="container clearfix">
+        <div class="pull-left">
+            <a class="navbar-brand" href="/staff">
+                <h1 class="tm-site-title mb-0">
+                <span style="vertical-align: inherit;">
+                    <span style="vertical-align: inherit;">
+                        <% title.map((item,index)=>{ %>
+                          <%- item.position%>
+                        <% }) %>
+                    </span>
+                </span>
+                </h1>
+            </a>
+
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mx-auto h-100 center-block">
+
+                <li class="nav-item">
+                    <a class="nav-link  <%- titles=='staff'?'active':''%>" href="/staff">
+                        <i class="glyphicon glyphicon-user"></i>
+                        <span style="vertical-align: inherit;">
+                            <span style="vertical-align: inherit;">
+                               我的资料
+                            </span>
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link  <%- titles=='leave'?'active':''%>" href="/leave">
+                        <i class="glyphicon glyphicon-list-alt"></i>
+                        <span style="vertical-align: inherit;">
+                            <span style="vertical-align: inherit;">
+                               请假申请
+                            </span>
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%- titles=='socket'?'active':''%>" href="/socket">
+                        <i class="glyphicon glyphicon-comment"></i>
+                        <span style="vertical-align: inherit;"><span
+                                style="vertical-align: inherit;">
+                                    员工聊天室
+                        </span></span></a>
+                </li>
+            </ul>
+        </div>
+        <div class="pull-right">
+            <ul class="">
+                <li class="nav-item" style="">
+                    <a href="/logout" class="nav-link" style="font-size: 18px">
+                        <% title.map((item,index)=>{ %>
+                        欢迎您<%- item.username%>,退出
+                        <% }) %>
+                    </a>
+                    <a href="" id="aPassword" style="font-size: 0">
+                        <% title.map((item,index)=>{ %>
+                        <%- item.username%>
+                        <% }) %>
+                    </a>
+                    <a href="" data-toggle="modal" data-target="#myModal">
+                        个人资料
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">修改个人资料</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label for="ecipient-ame" class="control-label">*新密码:</label>
+                    <input type="password"
+                           class="form-control"
+                           name="username"
+                           onKeyUp="passVerify(value)"
+                           data-placement="top"
+                           placeholder="请输入新密码"
+                           data-content="密码输入有误，请输入以6-20位以字母和数字组成的密码"
+                           data-animation="true"
+                           id="ecipient-ame">
+                    <span class="pawSpan" style="color:#ff003e;"></span>
+                </div>
+                <div class="form-group">
+                    <label for="ecipient-ame1" class="control-label">*确认密码密码:</label>
+                    <input type="password"
+                           class="form-control"
+                           name="password"
+                           id="ecipient-ame1"
+                           onkeyUP="passOnce(value)"
+                           data-placement="top"
+                           placeholder="请再次输入密码"
+                           data-content="密码输入有误，请输入以6-20位以字母和数字组成的密码"
+                           data-animation="true"
+                    >
+                    <span class="pawSpan1" style="color:#ff003e;"></span>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                        data-target="#myModal3" onclick="updatePassword()">确认
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     style="box-shadow: 3px 3px 5px #888888;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel3">修改密码</h4>
+            </div>
+            <div class="modal-body updateUserModal">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn btn-danger" id="updateUser" name="updateUser" data-toggle="modal4"
+                        data-target=".bs-example-modal-sm" onclick="updateUser()">确定
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="alert alert-success " id="alertWarn" style="width: 50%;margin: auto;">
+    <a href="#" rel="external nofollow" rel="external nofollow" rel="external nofollow" class="close"
+       data-dismiss="alert" aria-hidden="true"></a>
+    <strong>成功！</strong>密码修改成功,即将返回登录页面！<span id="time"></span>
+</div>
+<script>
+
+    var passFlag = false;
+    var passFlag1 = false;
+    var passSpanFlag = false;
+    var passSpanFlag1 = false;
+
+    $('#alertWarn').hide();
+
+    passVerify = (value) => {
+        var reg = /^(\w){6,20}$/ig;
+        $('.pawSpan').html('');
+        if (reg.test(value)) {
+            $('#ecipient-ame').popover('destroy').css({borderColor: "#00ff34"});
+            passFlag = true;
+        } else {
+
+            $('#ecipient-ame').popover('show').css({borderColor: "#ff000d"});
+            passFlag = false;
+            // sub.disabled = "true"
+        }
+        return passFlag;
+    };
+
+    passOnce = (value) => {
+        var reg = /^(\w){6,20}$/ig;
+        var val = $('#ecipient-ame').val();
+        $('.pawSpan1').html('');
+        console.log(val);
+        if (reg.test(value)) {
+
+            if (val == value) {
+                $('#ecipient-ame1').popover('destroy').css({borderColor: "#00ff34"});
+                $('.pawSpan1').html("");
+                passFlag1 = true;
+            } else {
+                passFlag1 = false;
+                $('.pawSpan1').html('两次输入的密码不一致')
+            }
+
+        } else {
+            $('#ecipient-ame1').popover('show').css({borderColor: "#ff000d"});
+            passFlag1 = false;
+            // sub.disabled = "true"
+        }
+        return passFlag;
+    };
+    updatePassword = () => {
+        if ($('#ecipient-ame').val() === '') {
+            passSpanFlag = false;
+            $('.pawSpan').html('请输入新密码');
+        } else {
+            $('.pawSpan').html('');
+            passSpanFlag = true;
+        }
+        if ($('#ecipient-ame1').val() === '') {
+            passSpanFlag1 = false;
+            $('.pawSpan1').html('请再次输入新密码');
+        } else {
+            $('.pawSpan1').html('');
+            passSpanFlag1 = true;
+        }
+
+
+        if (passFlag === true && passFlag1 === true && passSpanFlag === true && passSpanFlag1 === true) {
+            $('.updateUserModal').html('确认修改密码吗？');
+            updateUser = () => {
+                $.ajax({
+                    url: '/updatePassword',
+                    data: {
+                        password: $('#ecipient-ame').val(),
+                        username: $.trim($('#aPassword').html())
+                    },
+                    success: function (data) {
+                        $('#alertWarn').show();
+
+                        var s = 4;
+                        function countDown() {
+                            s--;
+                            if (s < 4) {
+                                s = '0' + s
+                            }
+                            $('#time').html(s);
+                        }
+                        setInterval(countDown, 1000);
+
+                        window.setTimeout(function () {
+                            $('[data-dismiss="alert"]').alert('close');
+
+                            window.location.href = '/'
+                        }, 4000);
+                        $('#myModal').modal('hide');
+                        $('#myModal3').modal('hide');
+                    }
+                });
+            }
+        } else {
+            console.log(2)
+        }
+    }
+
+</script>

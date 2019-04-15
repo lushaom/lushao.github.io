@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <%- include bring %>
+    <%- include ad %>
+
+    <style>
+        th {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<%- include("header",{titles:'admindiv'}) %>
+<div style="width: 80%;margin: auto;">
+    <div>
+        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#exampleModal"
+                data-whatever="@getbootstrap" onclick="addUserBtn()"> 添加部门
+        </button>
+        <button id="btn" class="btn btn-primary btn-lg" onclick="btn_export()">导出export</button>
+        <div class="col-lg-6">
+            <div class="input-group">
+
+                <input type="text" class="form-control" id="seekInp" placeholder="请输入用户名或用户ID">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" onclick="seek()" type="button">搜索</button>
+                </span>
+            </div><!-- /input-group -->
+        </div><!-- /.col-lg-6 -->
+    </div>
+
+
+    <table class="table table-bordered" id="table1" style="text-align: center;">
+
+        <tr>
+            <th>部门</th>
+            <th>部门主管</th>
+
+            <th align="center">操作</th>
+        </tr>
+
+        <% result.map((item,index)=>{ %>
+        <tr>
+            <td><%- item.section%></td>
+            <td><%- item.username%></td>
+            <td>
+                <button type="button" class="btn btn-info updateBtn" data-toggle="modal" data-target="#exampleModal1"
+                        data-whatever="@getbootstrap">修改
+                </button>
+                <button type="button" class="btn btn-primary del" data-toggle="modal" name='Delete1'
+                        data-target="#myModal1">
+                    删除
+                </button>
+            </td>
+        </tr>
+
+        <% }) %>
+
+
+    </table>
+
+
+    <nav aria-label="Page navigation" class="navigation">
+        <ul class="pagination">
+            <li>
+                <a href="/admin?pageNo=<%- pageNo-1<=1?1:pageNo-1 %> " aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <% if(pageNo>2){ %>
+            <li><a href="/admin?pageNo=<%- pageNo -2  %>  "><%- pageNo -2 %></a></li>
+            <% } %>
+            <% if(pageNo>1){ %>
+            <li><a href="/admin?pageNo=<%- pageNo -1  %> "><%- pageNo -1 %></a></li>
+            <% } %>
+            <li class="active"><a href="#"><%- pageNo %></a></li>
+            <% if(pageNo<=totalPage-1){ %>
+            <li><a href="/admin?pageNo=<%- pageNo +1  %>"><%- pageNo +1 %></a></li>
+            <% } %>
+            <% if(pageNo<=totalPage-2){ %>
+            <li><a href="/admin?pageNo=<%- pageNo +2  %>"><%- pageNo +2 %></a></li>
+            <% } %>
+            <li>
+                <a href="/admin?pageNo=<%- pageNo+1>=totalPage?totalPage:pageNo+1  %>" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel1">删除</h4>
+                </div>
+                <div class="modal-body">
+                    确定删除吗？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button class="btn btn-danger" id="Delete1" name="Delete1" data-toggle="modal"
+                            data-target=".bs-example-modal-sm">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">添加部门</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">*部门名称:</label>
+                            <input type="text"
+                                   class="form-control"
+                                   name="username"
+                                   onKeyUp="addUsername(value)"
+                                   data-placement="top"
+                                   data-content="部门名输入有误，请输入以2-6位汉字组成用户名"
+                                   data-animation="true"
+                                   id="recipient-name">
+                            <span class="userSpan" style="color:#ff003e;"></span>
+                        </div>
+
+                        <label> 部门主管：
+                            <select class="form-control" name="section" id="addSelect">
+
+                                <% data.map((item,index)=>{ %>
+                                <option name="section">
+                                    <%- item.username%>
+                                </option>
+                                <% })%>
+                            </select>
+                        </label>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" id="modalBtn" data-toggle="modal"
+                                    name='addUser'
+                                    data-target="#myModal2" onclick="addUserModal()">确认
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         style="box-shadow: 3px 3px 5px #888888;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel2">新增部门</h4>
+                </div>
+                <div class="modal-body addUserModal">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button class="btn btn-danger" id="addUser" name="addUser" data-toggle="modal"
+                            data-target=".bs-example-modal-sm" onclick="addSection()">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel1">修改部门</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+
+
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">修改部门名称:</label>
+                            <input type="text"
+                                   class="form-control password"
+                                   name="password"
+                                   onKeyUp="addUsername1(value)"
+                                   data-placement="top"
+                                   data-content="部门名输入有误，请输入以2-6位汉字组成用户名"
+                                   data-animation="true"
+                                   id="recipient"
+
+                            >
+                            <span class="userSpan1" style="color:#ff003e;"></span>
+                        </div>
+
+
+                        <label> 修改部门主管：
+                            <select class="form-control section" name="section" id="addSelect1">
+                                <% data.map((item,index)=>{ %>
+                                <option name="section">
+                                    <%- item.username%>
+                                </option>
+                                <% })%>
+
+                            </select>
+                        </label>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" id="modalBtn1" data-toggle="modal"
+                                    data-target="#myModal3" onclick="updateBtn()">确认
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         style="box-shadow: 3px 3px 5px #888888;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel3">修改用户</h4>
+                </div>
+                <div class="modal-body updateUserModal">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button class="btn btn-danger" id="updateUser" name="updateUser" data-toggle="modal"
+                            data-target=".bs-example-modal-sm" onclick="updateUser()">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+
+    btn_export =()=>{
+        var table1 = document.querySelector("#table1");
+        var sheet = XLSX.utils.table_to_sheet(table1);//将一个table对象转换成一个sheet对象
+        openDownloadDialog(sheet2blob(sheet),'下载.xlsx');
+    };
+
+
+    var upId = '';
+    $('.updateBtn').on('click', function () {
+        var username = JSON.stringify(this.parentElement.previousElementSibling.innerHTML);
+
+        upId = username;
+
+        $.ajax({
+            url: '/updateBtnAd',
+            data: {
+                username
+            },
+
+            success: function (data) {
+                $('#recipient').val(data.result.section);
+                $('.section').val(data.result.username);
+            }
+        });
+    });
+
+    var obj = {};
+
+    $('.del').on('click', function () {
+
+        obj.section = this.parentElement.previousElementSibling.previousElementSibling.innerHTML;
+    });
+
+    $('#Delete1').click(function () {
+        window.location.href = '/deleteSec?section=' + JSON.stringify(obj)
+    });
+
+
+    var maxId = '';
+
+    addUserBtn = () => {
+        // $.ajax({
+        //     url: '/addUserBtn',
+        //     success: function (data) {
+        //         var result = data.result;
+        //
+        //         for (var i = 0; i < result.length; i++) {
+        //             var maxId = result[i].id
+        //         }
+        //         document.getElementsByClassName('recipient-name-inp')[0].value = maxId * 1 + 1
+        //     }
+        //
+        // })
+    };
+    var useFlag = false;
+    var passFlag = false;
+    var userSpanFlag = false;
+    var passSpanFlag = false;
+
+    var useFlag1 = true;
+    var passFlag1 = true;
+    var userSpanFlag1 = false;
+    var passSpanFlag1 = false;
+    addUsername = (value) => {
+        var reg = /^[A-Za-z\-\u4e00-\u9fa5]{2,7}$/;
+        if (reg.test(value)) {
+
+            $('#recipient-name').popover('destroy').css({borderColor: "#3bff17"});
+            useFlag = true;
+            $.ajax({
+                url: "seekSection",
+                data: {section: value},
+                success: function (data) {
+
+                    if (data.result) {
+                        $('.userSpan').html('部门已存在').show();
+                        useFlag = false;
+                    } else {
+                        $('.userSpan').hide();
+                    }
+
+                }
+            });
+            $('.userSpan').hide();
+        } else {
+            $('#recipient-name').popover('show').css({borderColor: "#ff000d"});
+            useFlag = false;
+
+        }
+    };
+
+
+    addUsername1 = (value) => {
+        var reg = /^[A-Za-z\-\u4e00-\u9fa5]{2,7}$/;
+        if (reg.test(value)) {
+            $('#recipient-name1').popover('destroy').css({borderColor: "#3bff17"});
+            $.ajax({
+                url: "seekSection",
+                data: {section: value},
+                success: function (data) {
+
+                    if (data.result && data.result.position === '部门主管') {
+                        useFlag1 = false;
+                        $('.userSpan1').html('部门已存在').show();
+                    } else {
+                        $('.userSpan1').hide();
+                        useFlag1 = true
+                    }
+
+                }
+            });
+            useFlag1 = true;
+
+            $('.userSpan1').hide();
+        } else {
+            $('#recipient-name1').popover('show').css({borderColor: "#ff000d"});
+            useFlag1 = false;
+        }
+
+    };
+
+    $('.userSpan').hide();
+    $('.passSpan').hide();
+    $('.userSpan1').hide();
+    $('.passSpan1').hide();
+
+
+    addUserModal = () => {
+
+
+        userSpanFlag = $('#recipient-name').val() !== "";
+
+
+        $.ajax({
+            url: '/addSectionModal',
+            data: {
+                username: $('#addSelect').val()
+            },
+            success: function (data) {
+                var results = data.result;
+
+                var username = $('#addSelect').val()
+                if (results.position === '部门主管' && useFlag === true && userSpanFlag === true) {
+                    $('#myModalLabel2').html('添加部门');
+                    $('.addUserModal').html($('#addSelect').val() + '已是' + results.section + '主管,无法继续添加为' + $('#recipient-name').val() + '主管' + `<br>` + `<span style="color:#f00;">(要继续添加 ${username} 为 ${$('#recipient-name').val()}主管，请先更改${results.section}主管)</span>`);
+                    addSection = () => {
+                        $('#myModal2').modal('hide');
+                    }
+
+                } else if (useFlag === true && userSpanFlag === true) {
+                    addSection = () => {
+                        if (useFlag === true && userSpanFlag === true) {
+
+                            window.location.href = 'addSection?section=' + $('#recipient-name').val() + "&username=" + $('#addSelect').val() + "&position=" + '部门主管';
+                        } else {
+                            if (userSpanFlag === false && useFlag === false) {
+                                $('.userSpan').show();
+                            } else {
+                                $('.userSpan').hide();
+                            }
+
+                            $('#myModal2').modal('hide');
+                        }
+                    };
+                    $('#myModalLabel2').html('添加部门');
+                    $('.addUserModal').html('你确定将' + $('#addSelect').val() + '任命为' + $('#recipient-name').val() + '主管')
+                }
+            }
+        });
+
+
+        if (userSpanFlag === false && useFlag === false) {
+            $('#myModalLabel2').html('错误提示');
+            $('.addUserModal').html('添加错误，请注意红色提示')
+            $('.userSpan').html('部门不能为空，请输入要添加的部门').show();
+        } else {
+            $('.userSpan').hide();
+        }
+
+
+    };
+
+
+    updateBtn = () => {
+        if ($('#recipiet-nae1').val() === "") {
+            userSpanFlag1 = false;
+            $('.userSpan').show();
+        } else {
+            userSpanFlag1 = true;
+        }
+
+        $.ajax({
+            url: '/updateSectionDiv',
+            data: {
+                username: $('#addSelect1').val()
+            },
+            success(data) {
+                if (data.result) {
+                    let results = data.result;
+                    if (results.position === '部门主管' && useFlag1 === true && userSpanFlag1 === true && JSON.stringify(results.username) !== upId) {
+                        $('.updateUserModal').html($('#addSelect1').val() + '已是' + results.section + '主管,无法修改为' + $('#recipient').val() + '主管' + `<br>` + `<span style="color:#f00;">(要继续添加 ${$('#addSelect1').val()} 为 ${$('#recipient').val()}主管，请先更改${results.section}主管)</span>`);
+                        updateUser = () => {
+                            $('#myModal3').modal('hide');
+                        }
+                    } else {
+                        $('.updateUserModal').html('是否修改' + $('#addSelect1').val() + '为' + $('#recipient').val() + '主管');
+                        updateUser = () => {
+                            window.location.href = 'updateSection?section=' + $('#recipient').val() + "&username=" + $('#addSelect1').val() + '&oldUsername=' + upId + "&position=" + '部门主管';
+                        }
+                    }
+                }
+
+            }
+        });
+
+        // if (useFlag1 === true && userSpanFlag1 === true) {
+        //     $('.updateUserModal').html('您确定修改' + $('#addSelect1').val() + '为' + $('.password').val() + '主管吗？')
+        //
+        //     updateUser = () => {
+        //         window.location.href = 'updateSection?section=' + $('#recipient-name1').val() + "&username=" + $('#addSelect1').val() + '&oldUsername=' + upId + "&position=" + '部门主管';
+        //     }
+        //
+        // } else {
+        //
+        //
+        //     $('.userSpan1').show();
+        //
+        //     updateUser = () => {
+        //         $('#myModal3').modal('hide');
+        //     };
+        //
+        //
+        //     $('#myModalLabel3').html('错误提示');
+        //     $('.updateUserModal').html('添加错误，请注意红色提示!!!')
+        // }
+    };
+
+    // updateUser = () => {
+    //     if (useFlag === true && userSpanFlag === true) {
+    //
+    //         window.location.href = 'updateSection?section=' + $('#recipient-name1').val() + "&username=" + $('#addSelect1').val() + '&oldUsername=' + upId + "&position=" + '部门主管';
+    //     } else {
+    //         if (userSpanFlag === false && useFlag === false) {
+    //             $('.userSpan').show();
+    //         } else {
+    //             $('.userSpan').hide();
+    //         }
+    //
+    //         $('#myModal2').modal('hide');
+    //     }
+    // };
+
+
+    seek = () => {
+        window.location.href = 'admindiv?seek=' + $('#seekInp').val();
+    };
+
+    $('#seekInp').keydown(function (e) {
+        if (e.keyCode == 13) {
+            window.location.href = 'admindiv?seek=' + $('#seekInp').val();
+        }
+    })
+
+</script>
+</html>

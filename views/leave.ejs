@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <%- include bring %>
+    <%- include ad %>
+    <style>
+        th {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<%- include("headers",{titles:'leave'}) %>
+<div style="font-size: 0;width: 0;height: 0;">
+    <p id="userDiv"><%- arr.username%></p>
+    <p id="secDiv"><%- arr.section%></p>
+</div>
+<div style="width: 80%;margin: auto;">
+
+    <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#exampleModal"
+            data-whatever="@getbootstrap" onclick="addUserBtn()"> 请假
+    </button>
+    <button id="btn" class="btn btn-primary btn-lg" onclick="btn_export()">导出export</button>
+
+    <table class="table table-bordered" id="table1" style="text-align: center;">
+        <tr>
+            <th>请假单ID</th>
+            <th>申请人</th>
+            <th>标题</th>
+            <th>起始时间</th>
+            <th>结束时间</th>
+            <th>请假时间</th>
+            <th>请假单状态</th>
+            <th>操作</th>
+        </tr>
+
+        <% if(result == ""){%>
+        <tr>
+            <td colspan="8">
+                暂无请假数据....
+            </td>
+        </tr>
+        <%} else{ %>
+
+        <% result.map((item,index)=>{%>
+        <tr>
+            <td id="td1"><%- item.id%></td>
+            <td><%- item.username%></td>
+            <td><%- item.title%></td>
+            <td><%- item.startingTime%></td>
+            <td><%- item.endTime%></td>
+            <td id="currentTime"><%- item.currentTime%></td>
+            <%if(item.type==0){%>
+            <td class="td1">待审批</td>
+
+            <%} else{%>
+            <td class="td1">已归档
+                <div style="width: 0;height: 0;font-size: 0;" id="spr"><%- item.spr%></div>
+                <div style="width: 0;height: 0;font-size: 0;" id="remarkremark"><%- item.remarkremark%></div>
+                <div style="width: 0;height: 0;font-size: 0;" id="inType"><%- item.type%></div>
+                <div style="width: 0;height: 0;font-size: 0;" id="code"><%- item.code%></div>
+            </td>
+            <%}%>
+
+            <td>
+                <button type="button" class="btn btn-primary del" data-toggle="modal" name='Delete1'
+                        data-target="#myModal0">
+                    查看结果
+                </button>
+                <button type="button" class="btn btn-primary del" data-toggle="modal" name='Delete1'
+                        data-target="#Modal1">
+                    删除
+                </button>
+
+            </td>
+        </tr>
+
+        <%})%>
+
+        <%}%>
+    </table>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">请假</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-nae" class="control-label">请假单号:</label>
+                            <input type="number" class="form-control recipient-name-inp" readonly name="uId"
+                                   id="recipient-nae">
+                        </div>
+                        <div class="form-group">
+                            <label for="recipiet-nae" class="control-label">标题:</label>
+                            <input type="text"
+                                   class="form-control"
+                                   name="username"
+                                   onKeyUp="addUsername1(value)"
+                                   id="recipiet-nae">
+                            <span id="titSpan"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">起始时间:</label>
+                            <input type="datetime-local"
+                                   class="form-control"
+                                   name="password"
+                                   id="recipient-name"
+                            >
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-name1" class="control-label">结束时间:</label>
+                            <input type="datetime-local"
+                                   class="form-control"
+                                   name="password"
+                                   id="recipient-name1"
+                            >
+
+                        </div>
+
+                        <div class="form-group">
+                            <label for="recipient-name2" class="control-label">请假原因:</label>
+                            <textarea class="form-control" onKeyUp="addUsername(value)" rows="3" id="recipient-name2"
+                                      name=textarea></textarea>
+                            <span id="texSPan"></span>
+                        </div>
+
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" id="modalBtn" data-toggle="modal"
+                                    name='addUser'
+                                    data-target="#myModal2" onclick="addUserModal()">
+                                确认
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     style="box-shadow: 3px 3px 5px #888888;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel3"></h4>
+            </div>
+            <div class="modal-body updateUserModal">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn btn-danger" id="updateUser" name="updateUser" data-toggle="modal"
+                        data-target=".bs-example-modal-sm" onclick="updateUser()">确定
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal0" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel1">审批结果</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="recipient-name" class="control-label">申请时间:</label>
+                    <input type="text" class="form-control recipient-name-inp" readonly name="uId"
+                           id="recipient-nae1">
+                </div>
+                <label> 审批结果：
+                    <span id="addPosition1"></span>
+                </label>
+
+                <div class="form-group">
+                    <label for="recipient-name" class="control-label">审批人:</label>
+
+                    <input type="text" class="form-control recipient-name-inp" readonly name="uId"
+                           id="recipient-nae2">
+
+
+                </div>
+                <div class="form-group">
+                    <label for="recipient-name" class="control-label">备注: </label>
+                    <textarea class="form-control" rows="3" id="recipient-nae3" readonly name=textarea></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn btn-danger" id="upDel" name="Delete1" data-toggle="modal"
+                        data-target="#myModal3">确定
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="Modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">删除</h4>
+            </div>
+            <div class="modal-body">
+                确定删除吗？
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn btn-danger" id="Delete" name="Delete" data-toggle="modal"
+                        data-target=".bs-example-modal-sm">确定
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    btn_export =()=>{
+        var table1 = document.querySelector("#table1");
+        var sheet = XLSX.utils.table_to_sheet(table1);//将一个table对象转换成一个sheet对象
+        openDownloadDialog(sheet2blob(sheet),'下载.xlsx');
+    };
+    $('#recipient-name').val(moment().format("YYYY-MM-DDTHH:mm"));
+    $('#recipient-name1').val(moment().format("YYYY-MM-DDTHH:mm"));
+    addUserBtn = () => {
+        $.ajax({
+            url: '/addUserBtnLeave',
+            success: function (data) {
+                var result = data.result;
+
+                for (var i = 0; i < result.length; i++) {
+                    var maxId = result[i].id
+                }
+                document.getElementsByClassName('recipient-name-inp')[0].value = maxId * 1 + 1
+            }
+        })
+    };
+
+    var titFlag = false;
+    var texFlag = false;
+
+    addUsername1 = (value) => {
+        $('#titSpan').html('');
+        titFlag = true;
+    };
+    addUsername = (value) => {
+        $('#texSPan').html('');
+        titFlag = true
+    };
+    dateFormat = function (date) {
+        var time = new Date(date);
+        var year = time.getFullYear();
+        var month = time.getMonth() + 1;
+        var day = time.getDate();
+        var hour = time.getHours();
+        var min = time.getMinutes();
+        var sec = time.getSeconds();
+        return `${year}-${month}-${day} ${hour}:${min}:${sec}`
+    };
+
+    addUserModal = () => {
+        var reTitle = $('#recipiet-nae').val();
+        var leaveCause = $('#recipient-name2').val();
+
+
+        if (reTitle === '') {
+            $('#titSpan').html('标题不能为空').css({color: '#f00'});
+            titFlag = false
+        } else {
+            $('#titSpan').html('');
+            titFlag = true
+        }
+
+        if (leaveCause === '') {
+            $('#texSPan').html('请输入请假原因').css({color: '#f00'});
+            texFlag = false;
+        } else {
+            $('#texSPan').html('');
+            texFlag = true;
+        }
+        if (texFlag === true && titFlag === true) {
+            $('.updateUserModal').html('你确定请假吗？');
+            updateUser = () => {
+                window.location.href = 'leaveBtn?id=' + $('#recipient-nae').val() + '&username=' + $.trim($('#userDiv').html())
+                    + '&section=' + $.trim($('#secDiv').html()) + '&startingTime=' + $('#recipient-name').val() + '&endTime=' + $('#recipient-name1').val() + '&title=' + $('#recipiet-nae').val() + '&reasonLeave=' + $('#recipient-name2').val() + '&currentTime=' + dateFormat(new Date()) + '&code=' + '0' + '&type=' + '0';
+
+            }
+        } else {
+            $('.updateUserModal').html('错误，请注意红色提示');
+            updateUser = () => {
+                $('#myModal2').modal('hide');
+            }
+        }
+    };
+
+
+    var id = '';
+
+    $('.del').on('click', function () {
+
+        id = this.parentElement.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.innerHTML;
+        console.log(id)
+        $.ajax({
+            url: '/leaveDel',
+            data: {
+                id: id
+            },
+            success: function (data) {
+                let results = data.result;
+                if (results.type === '0') {
+                    $('#recipient-nae1').val($('#currentTime').html());
+                    $('#recipient-nae2').val('');
+
+
+                    $('#addPosition1').html('未审批');
+
+                    $('#recipient-nae3').val($('#remarkremark').html());
+
+                } else {
+
+                    $('#recipient-nae1').val($('#currentTime').html());
+                    $('#recipient-nae2').val(results.spr);
+
+                    if ($('#code').html() == 1) {
+                        $('#addPosition1').html('同意');
+                    } else {
+                        $('#addPosition1').html('不同意');
+                    }
+                    $('#recipient-nae3').val($('#remarkremark').html());
+
+                }
+
+            }
+        })
+    });
+
+    $('#Delete').on('click', function () {
+        window.location.href = 'leaveDelete?id=' +id;
+    })
+
+
+</script>
+</body>
+</html>

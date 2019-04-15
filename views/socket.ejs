@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>login</title>
+    <%- include bring %>
+    <%- include ad %>
+
+    <style>
+
+        html, body, #box {
+            width: 100%;
+            height: 100%;
+        }
+
+        #box {
+            background: rgba(0, 0, 0, 0.68);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #inp {
+            width: 300px;
+            height: 200px;
+            border: 2px solid yellowgreen;
+            border-radius: 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            /* top:50%;
+            left:50%;
+            margin:-100px -150px; */
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            display: none;
+        }
+
+        #op {
+            position: absolute;
+            z-index: 100;
+            top: 50%;
+            left: 50%;
+            color: #fff;
+            font-size: 40px;
+            transform: translate(-50%, -50%);
+            border: 2px solid darkblue;
+            height: 200px;
+            border-radius: 10px;
+            line-height: 200px;
+
+        }
+
+        .toolbar {
+            border: 1px solid #ccc;
+        }
+
+        .text {
+            border: 1px solid #ccc;
+            height: 200px;
+        }
+
+        /* table 样式 */
+        table {
+            border-top: 1px solid #ccc;
+            border-left: 1px solid #ccc;
+        }
+
+        table td,
+        table th {
+            border-bottom: 1px solid #ccc;
+            border-right: 1px solid #ccc;
+            padding: 3px 5px;
+        }
+
+        table th {
+            border-bottom: 2px solid #ccc;
+            text-align: center;
+        }
+
+        /* blockquote 样式 */
+        blockquote {
+            display: block;
+            border-left: 8px solid #d0e5f2;
+            padding: 5px 10px;
+            margin: 10px 0;
+            line-height: 1.4;
+            font-size: 100%;
+            background-color: #f1f1f1;
+        }
+
+        /* code 样式 */
+        code {
+            display: inline-block;
+            *display: inline;
+            *zoom: 1;
+            background-color: #f1f1f1;
+            border-radius: 3px;
+            padding: 3px 5px;
+            margin: 0 3px;
+        }
+
+        pre code {
+            display: block;
+        }
+
+
+    </style>
+    <link rel="stylesheet" href="./stylesheets/default.css">
+</head>
+<body>
+<% title.map((item,index)=>{ %>
+<% if(item.position === '管理员') {%>
+<%- include("header",{titles:'socket'}) %>
+<%}%>
+
+<% if(item.position === '部门主管') {%>
+<%- include("headerm",{titles:'socket'}) %>
+<%}%>
+
+<% if(item.position === '员工') {%>
+<%- include("headers",{titles:'socket'}) %>
+<%}%>
+
+<% }) %>
+
+
+<div class="container-fluid">
+    <div>
+        <div class="row"
+             style="width:800px;height:800px;font-size: 16px;overflow-y:auto;margin: auto;background-color:#fff;border-radius: 8px">
+            <!--<h1 class="text-success">Socket.IO</h1>-->
+            <!--<h2 class="text-danger">wh1811 - 在线聊天室 </h2>-->
+            <div style="height: 50px; line-height: 50px;background-color:#62b114;">
+                <h4 style="margin: 0; line-height: 50px;">实时在线人数 --- <b class="text-primary" id="count"> 0 </b></h4>
+            </div>
+
+            <div id="chatroom"
+                 style="width:800px;height:450px;font-size: 16px;overflow-y:auto;margin: auto;background-color:#fff;">
+
+            </div>
+            <!--<label>-->
+            <!--<textarea id="word" placeholder="请输入聊天内容" style="margin: 0 -49px 10px 10px; width: 700px; height: 80px;resize:none" class="form-control"></textarea>-->
+            <!--</label>-->
+            <div id="div1">
+            </div>
+            <div id="div2" class="text"> <!--可使用 min-height 实现编辑区域自动增加高度-->
+
+            </div>
+
+            <button id="sendBtn">发送</button>
+        </div>
+    </div>
+</div>
+
+
+<script src="/javascripts/wangEditor.js"></script>
+<script>
+    // 客户端 socket
+    // 1. 链接 服务器
+    // 2. 监听服务器发来的消息
+    // 3. 监听 服务器 error
+    // 4. 监听 服务器 关闭
+
+    var E = window.wangEditor;
+    var editor = new E('#div1', '#div2');
+    //重新设置富文本的内容
+    editor.customConfig.menus = [
+        'head',
+        'emoticon',
+        'bold',  // 粗体
+        'fontSize',  // 字号
+        'italic',  // 斜体
+        'underline',  // 下划线
+        'foreColor',  // 文字颜色
+        'link',  // 插入链接
+        'justify',  // 对齐方式
+        'image',  // 插入图片
+        'undo',  // 撤销
+        'redo'  // 重复
+    ];
+    // 隐藏“网络图片”tab
+    editor.customConfig.showLinkImg = false;
+    // 将图片大小限制为 3M
+    editor.customConfig.debug = true;
+    // 关闭粘贴内容中的样式
+    editor.customConfig.pasteFilterStyle = false;
+    // 忽略粘贴内容中的图片
+    editor.customConfig.pasteIgnoreImg = true;
+    // 使用 base64 保存图片
+    editor.customConfig.uploadImgShowBase64 = true;
+
+    // 上传图片到服务器
+    editor.customConfig.uploadFileName = 'myFile'; //设置文件上传的参数名称
+
+    editor.customConfig.uploadImgServer = '/upload'; //设置上传文件的服务器路径
+    editor.customConfig.uploadImgMaxSize = 3 * 1024 * 1024; // 将图片大小限制为 3M
+    //自定义上传图片事件
+    // editor.customConfig.uploadImgHooks = {
+    //     before: function (xhr, editor, files) {
+    //         console.log(xhr, editor, files);
+    //     },
+    //     success: function (xhr, editor, result) {
+    //         console.log("上传成功");
+    //     },
+    //     fail: function (xhr, editor, result) {
+    //         console.log("上传失败,原因是" + JSON.stringify(result));
+    //     },
+    //     error: function (xhr, editor) {
+    //         console.log("上传出错");
+    //     },
+    //     timeout: function (xhr, editor) {
+    //         console.log("上传超时");
+    //     }
+    // };
+    editor.create();//创建富文本
+
+    var socketIo = null;
+    window.onload = function () {
+        socketIo = io.connect("http://localhost:3800");  // 1. 链接 服务器
+
+        socketIo.on("connect", () => {
+            console.log("xxxx 客户端链接");
+            $.ajax({
+                url: "gainUsername",
+                success: function (data) {
+                    console.log(data.arr.username);
+                    var nickname = data.arr.username;
+                    socketIo.emit("login", nickname);
+                }
+            });
+
+        })
+
+        // loginBtn.onclick = function () {
+        //     console.log(nickname.value)
+        //     // 给服务器发送消息
+        // }
+
+
+        socketIo.on("setOnLineCount", count => {
+            console.log(count);
+            $("#count").html(count);
+        });
+
+
+
+        // 发送消息
+
+        sendBtn.onclick = function () {
+            console.log(editor.txt.html());
+            socketIo.emit("msgFromClient", editor.txt.html());
+            editor.txt.html('<p></p>')
+        };
+
+        function dateFormat(date) {
+            var time = new Date(date);
+            var hour = time.getHours();
+
+            var min = time.getMinutes();
+            var sec = time.getSeconds();
+            return `${hour < 10 ? "0" + hour : hour}:${min < 10 ? "0" + min : min}:${sec < 10 ? "0" + sec : sec}`
+        }
+
+        socketIo.on("reveiceMsg", (nickname, msg) => {
+
+            // displayMsg(`${nickname}  ${dateFormat(new Date())} `, '#000', `${msg}`);
+            $("#chatroom")[0].innerHTML += `<div><p style="padding-left: 10px">${nickname}  ${dateFormat(new Date())} </p> <p style="padding-left: 15px;padding-right: 15px;">${msg}</p></div>`;
+            $('#chatroom').scrollTop($('#chatroom')[0].scrollHeight);
+        });
+
+        socketIo.on("disconnect", () => {
+            console.log("服务器 socket 已经关闭");
+        })
+    };
+
+
+</script>
+</body>
+</html>

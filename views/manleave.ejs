@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <%- include bring %>
+    <%- include ad %>
+    <style>
+        th {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<%- include("headerm",{titles:'manleave'}) %>
+<div style="width: 80%;margin: auto;">
+    <button id="btn" class="btn btn-primary btn-lg" onclick="btn_export()">导出export</button>
+    <table class="table table-bordered" id="table1" style="text-align: center;">
+        <tr>
+            <th>请假单ID</th>
+            <th>申请人</th>
+            <th>标题</th>
+            <th>起始时间</th>
+            <th>结束时间</th>
+            <th>申请时间</th>
+            <th>请假单状态</th>
+            <th></th>
+        </tr>
+
+        <% if(result == ""){%>
+        <tr>
+            <td colspan="8">
+                暂无请假数据....
+            </td>
+        </tr>
+        <%} else{ %>
+
+        <% result.map((item,index)=>{%>
+        <tr>
+            <td><%- item.id%></td>
+            <td><%- item.username%></td>
+            <td><%- item.title%></td>
+            <td><%- item.startingTime%></td>
+            <td><%- item.endTime%></td>
+            <td><%- item.currentTime%></td>
+            <%if(item.type === '1'){%>
+
+            <td> 已归档</td>
+
+            <%} else {%>
+
+            <td>待审批</td>
+
+            <%}%>
+            <td>
+
+                <button type="button" class="btn btn-info updateBtn" data-toggle="modal" data-target="#exampleModal1"
+                        data-whatever="@getbootstrap">查看
+                </button>
+                <button type="button" class="btn btn-primary del" id="del1" data-toggle="modal" name='Delete1'
+                        data-target="#Modal1">
+                    删除
+                </button>
+            </td>
+        </tr>
+
+        <%})%>
+
+        <%}%>
+
+    </table>
+
+    <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel2">请假信息</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+
+                        <div class="form-group col-xs-6">
+                            <label for="recipient-name" class="control-label">请假单ID:</label>
+                            <input type="number" class="form-control recipient-name-inp" readonly name="uId"
+                                   id="recipient-name">
+                        </div>
+                        <div class="form-group col-xs-6">
+                            <label for="recipient-name1" class="control-label">*请假人:</label>
+                            <input type="text"
+                                   class="form-control username"
+                                   name="username"
+                                   readonly
+                                   id="recipient-name1">
+                        </div>
+                        <div class="form-group col-xs-12">
+                            <label for="recipient-name2" class="control-label">*标题:</label>
+                            <input type="text"
+                                   class="form-control password"
+                                   name="password"
+                                   id="recipient-name2"
+                                   readonly
+                            >
+                        </div>
+                        <div class="form-group  col-xs-6">
+                            <label for="recipient-name2" class="control-label">*起始时间:</label>
+                            <input type="datetime-local"
+                                   class="form-control password"
+                                   name="password"
+                                   id="recipient-name3"
+                                   readonly
+                            >
+                        </div>
+                        <div class="form-group  col-xs-6">
+                            <label for="recipient-name2" class="control-label">*结束时间:</label>
+                            <input type="datetime-local"
+                                   class="form-control password"
+                                   name="password"
+                                   id="recipient-name4"
+                                   readonly
+                            >
+                        </div>
+                        <div class="form-group col-xs-12">
+                            <label for="recipient-name2" class="control-label">请假原因:</label>
+                            <textarea class="form-control" readonly rows="3" id="recipient-name5"
+                                      name=textarea></textarea>
+
+                        </div>
+
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary del" id="del2" data-toggle="modal" name='Delete1'
+                                    data-target="#myModal0">
+                                审批
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="modal fade" id="myModal0" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel1">请假审批</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">申请时间:</label>
+                            <input type="text" class="form-control recipient-name-inp" readonly name="uId"
+                                   id="recipient-nae1">
+                        </div>
+                        <label> 审批结果：
+                            <select class="form-control position" name="position" id="addPosition1">
+                                <option name="position">同意</option>
+                                <option name="position">不同意</option>
+                            </select>
+                        </label>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">审批人:</label>
+                            <% title.map((item,index)=>{%>
+                            <input type="text" class="form-control recipient-name-inp" readonly name="uId"
+                                   id="recipient-nae2" value="<%- item.username%>">
+                            <%})%>
+
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">备注: </label>
+                            <textarea class="form-control" rows="3" id="recipient-nae3" name=textarea></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button class="btn btn-danger" id="upDel" name="Delete1" data-toggle="modal"
+                                data-target="#myModal3">确定
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     style="box-shadow: 3px 3px 5px #888888;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel3">确认审批</h4>
+            </div>
+            <div class="modal-body updateUserModal">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn btn-danger" id="updateUser" name="updateUser" data-toggle="modal"
+                        data-target=".bs-example-modal-sm" onclick="updateUser()">确定
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="Modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">删除</h4>
+            </div>
+            <div class="modal-body">
+                确定删除吗？
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button class="btn btn-danger" id="Delete" name="Delete" data-toggle="modal"
+                        data-target=".bs-example-modal-sm">确定
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    btn_export =()=>{
+        var table1 = document.querySelector("#table1");
+        var sheet = XLSX.utils.table_to_sheet(table1);//将一个table对象转换成一个sheet对象
+        openDownloadDialog(sheet2blob(sheet),'manleave.xlsx');
+    };
+
+    var id = '';
+    $('.updateBtn').on('click', function () {
+       id = this.parentElement.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.previousElementSibling.innerHTML;
+        $.ajax({
+            url: 'askLeave',
+            data: {id},
+            success(data) {
+                let results = data.result;
+                $('#recipient-name').val(results.id);
+                $('#recipient-name1').val(results.username);
+                $('#recipient-name2').val(results.title);
+                $('#recipient-name3').val(results.startingTime);
+                $('#recipient-name4').val(results.endTime);
+                $('#recipient-name5').val(results.reasonLeave);
+                $('#recipient-nae1').val(results.currentTime);
+                if (results.type === '1') {
+                    $('#del2').html('修改审批结果');
+
+                }
+                if(results.code==='0'){
+                    $('#addPosition1').val('不同意')
+                }else {
+                    $('#addPosition1').val('同意')
+                }
+
+                //console.log(results)
+            }
+        })
+    });
+
+    $('#upDel').on('click', function () {
+        if ($('#addPosition1').val() === '同意') {
+            $('.updateUserModal').html('您确定同意' + $('#recipient-name1').val() + '的请假申请？')
+
+            updateUser = () => {
+                window.location.href = 'upLeave?id=' + $('#recipient-name').val() + '&code=' + 1 + '&type=' + 1 + '&remarkremark=' + $('#recipient-nae3').val() + '&spr=' + $('#recipient-nae2').val()
+            }
+
+
+        } else {
+            $('.updateUserModal').html('您确定不同意' + $('#recipient-name1').val() + '的请假申请？');
+            updateUser = () => {
+                window.location.href = 'upLeave?id=' + $('#recipient-name').val() + '&code=' + 0 + '&type=' + 1 + '&remarkremark=' + $('#recipient-nae3').val() + '&spr=' + $('#recipient-nae2').val();
+            }
+        }
+    })
+    $('#Delete').on('click', function () {
+        window.location.href = 'leaveDelete?id=' +id;
+    })
+</script>
+</body>
+</html>

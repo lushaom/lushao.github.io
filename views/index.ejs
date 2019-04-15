@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <%- include bring %>
+    <style>
+        body, html {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #355C7D;
+            background: -webkit-linear-gradient(to bottom, #355C7D, #6C5B7B, #C06C84);
+            background: linear-gradient(to bottom, #355C7D, #6C5B7B, #C06C84);
+        }
+
+        .formDiv {
+            border: rgba(57, 69, 87, 0.46) 1px solid;
+            box-shadow: 3px 4px 5px rgba(57, 69, 87, 0.57);
+            width: 480px;
+            height: 312px;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 10%;
+            margin: auto;
+            text-align: center;
+            background-color: #fff;
+        }
+
+        .input-group {
+            padding: 12px;
+        }
+
+        h3 {
+            border-bottom: 1px #d5e3ef solid;
+            width: 75%;
+            padding: 5px;
+            color: #478fca !important;
+            margin: 20px auto;
+        }
+
+    </style>
+</head>
+<body>
+<!--<h2><%= title%></h2>-->
+<div class="formDiv">
+
+    <h3>后台管理系统</h3>
+    <form method="post" action="/login" style="width: 90%;margin: auto; padding: 20px;" id="form">
+        <div class="input-group">
+            <input
+                    type="text"
+                    class="form-control"
+                    id="username"
+                    name="username"
+                    placeholder="请输入用户名"
+                    onKeyUp="userVerify(value)"
+                    data-placement="top"
+                    data-content="用户名输入有误，请输入以3-6位英文、数字组成，以英文开头的用户名"
+                    data-animation="true"
+                    aria-label="Amount (to the nearest dollar)"
+            />
+            <span class="input-group-addon"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>
+
+        </div>
+        <span class="useSpan" style="color:#ff0300;">用户名不存在，请确定后输入</span>
+        <div class="input-group">
+            <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    name="password"
+                    placeholder="请输入密码"
+                    onkeyUP="passVerify(value)"
+                    data-placement="top"
+                    data-content="密码输入有误，请输入以6-20位以字母和数字组成的密码"
+                    data-animation="true"
+            />
+            <span class="input-group-addon"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></span>
+        </div>
+        <span class="pawSpan" style="color:#ff0300;">用户名和密码不匹配请重新输入</span>
+        <button type="submit" class="btn btn-primary" style="width: 80%;margin-top: 15px" id="subBtn">登陆</button>
+    </form>
+</div>
+
+
+</body>
+<script>
+    //value = value.replace(/[^a-z0-9]|^[^a-z]/ig,'')
+    // $(function () {
+    //     $('[data-toggle="popover"]').popover(
+    //         {
+    //             trigger: 'onkeyUP', //触发方式
+    //             template: '', //你自定义的模板
+    //             html: true, // 为true的话，data-content里就能放html代码了
+    //             title: '<div id="content"></div>'
+    //         }
+    //     )
+    // });
+    $('.useSpan').hide();
+    $('.pawSpan').hide();
+
+
+    var user = document.getElementById('username');
+    var pass = document.getElementById('password');
+    var sub = document.getElementById("subBtn");
+
+    var useFlag = false;
+    var passFlag = false;
+
+    var loginPsw = null;
+
+    userVerify = (value) => {
+        var reg = /^[A-Za-z0-9_\-\u4e00-\u9fa5]{2,5}$/;
+        if (reg.test(value)) {
+            $('#username').popover('destroy');
+            user.style.borderColor = "#00ff34";
+            useFlag = true;
+            $.ajax({
+                url: '/loginUse',
+                data: {
+                    username: value
+                },
+                success: function (data) {
+                    if(!data.result){
+
+                        $('.useSpan').show();
+                    }else {
+                        loginPsw = data.result.password
+                        $('.useSpan').hide();
+                    }
+
+                }
+            })
+            // document.getElementsByClassName("subBtn").disabled = true
+        } else {
+            user.style.borderColor = "#ff000d";
+            $('#username').popover('show');
+            useFlag = false;
+            sub.disabled = 'true';
+        }
+        return useFlag;
+    };
+
+
+    passVerify = (value) => {
+        var reg = /^(\w){6,20}$/ig;
+        // console.log(useFlag);
+        if (reg.test(value)) {
+            $('#password').popover('destroy');
+            pass.style.borderColor = "#00ff34";
+            passFlag = true;
+            // console.log(loginPsw,value)
+            if(value==loginPsw){
+                $('.pawSpan').hide();
+            }else {
+                $('.pawSpan').show();
+            }
+        } else {
+            pass.style.borderColor = "#ff000d";
+            $('#password').popover('show');
+            passFlag = false;
+            sub.disabled = "true"
+        }
+        return passFlag;
+    };
+
+
+    var form = document.getElementById('form');
+    form.onmousemove = function () {
+        if (useFlag === true && passFlag === true) {
+            sub.disabled = false
+        } else {
+            sub.disabled = "true"
+        }
+    }
+
+    // if (useFlag === true ) {
+    //
+    //     (useFlag)
+    //     // document.getElementsByClassName("subBtn").disabled=true;
+    // } else {
+    //
+    // }
+
+</script>
+</html>

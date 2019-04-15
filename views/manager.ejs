@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <%- include bring %>
+    <%- include ad %>
+
+    <style>
+        th {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<%- include("headerm",{titles:'manager'}) %>
+<div style="width: 80%;margin: auto;">
+    <div>
+        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" disabled name='Delete'
+                data-target="#Modal">
+            删除用户
+        </button>
+
+
+        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#exampleModal"
+                data-whatever="@getbootstrap" onclick="addUserBtn()"> 添加用户
+        </button>
+
+        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal5"
+        >
+            部门人数对比
+        </button>
+        <button id="btn" class="btn btn-primary btn-lg" onclick="btn_export()">导出export</button>
+        <div class="col-lg-6">
+            <div class="input-group">
+
+                <input type="text" class="form-control" id="seekInp" placeholder="请输入用户名或用户ID">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" onclick="seek()" type="button">搜索</button>
+                </span>
+            </div><!-- /input-group -->
+        </div><!-- /.col-lg-6 -->
+    </div>
+
+
+    <table class="table table-bordered" id="table1" style="text-align: center;">
+
+        <tr>
+            <th>
+                <input type="checkbox" id="CheckAll" name='CheckAll' class="check-all"/>
+            </th>
+            <th>用户ID</th>
+            <th>用户姓名</th>
+
+            <th align="center">所属部门</th>
+            <th align="center">操作</th>
+        </tr>
+
+        <% result.map((item,index)=>{ %>
+        <tr>
+
+            <td id="tbody">
+                <input type="checkbox" class='myCheck' name='Check[]' value="<%-item.id %>"/>
+            </td>
+            <td><%- item.id%></td>
+            <td><%- item.username%></td>
+            <td><%- item.section%></td>
+            <td>
+                <button type="button" class="btn btn-info updateBtn" data-toggle="modal" data-target="#exampleModal1"
+                        data-whatever="@getbootstrap">修改
+                </button>
+                <button type="button" class="btn btn-primary del" data-toggle="modal" name='Delete1'
+                        data-target="#myModal1">
+                    删除
+                </button>
+            </td>
+        </tr>
+
+        <% }) %>
+
+
+    </table>
+
+
+    <nav aria-label="Page navigation" class="navigation">
+        <ul class="pagination">
+            <li>
+                <a href="/admin?pageNo=<%- pageNo-1<=1?1:pageNo-1 %> " aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <% if(pageNo>2){ %>
+            <li><a href="/manager?pageNo=<%- pageNo -2  %>  "><%- pageNo -2 %></a></li>
+            <% } %>
+            <% if(pageNo>1){ %>
+            <li><a href="/manager?pageNo=<%- pageNo -1  %> "><%- pageNo -1 %></a></li>
+            <% } %>
+            <li class="active"><a href="#"><%- pageNo %></a></li>
+            <% if(pageNo<=totalPage-1){ %>
+            <li><a href="/manager?pageNo=<%- pageNo +1  %>"><%- pageNo +1 %></a></li>
+            <% } %>
+            <% if(pageNo<=totalPage-2){ %>
+            <li><a href="/manager?pageNo=<%- pageNo +2  %>"><%- pageNo +2 %></a></li>
+            <% } %>
+            <li>
+                <a href="/manager?pageNo=<%- pageNo+1>=totalPage?totalPage:pageNo+1  %>" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+
+    <div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">删除</h4>
+                </div>
+                <div class="modal-body">
+                    确定删除吗？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button class="btn btn-danger" id="Delete" name="Delete" data-toggle="modal"
+                            data-target=".bs-example-modal-sm">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel1">删除</h4>
+                </div>
+                <div class="modal-body">
+                    确定删除吗？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button class="btn btn-danger" id="Delete1" name="Delete1" data-toggle="modal"
+                            data-target=".bs-example-modal-sm">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">添加用户</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">用户ID:</label>
+                            <input type="number" class="form-control recipient-name-inp" readonly name="uId"
+                                   id="recipient-nae">
+                            <span id="showSpan" style="display: none">ID已存在</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">*用户名:</label>
+                            <input type="text"
+                                   class="form-control"
+                                   name="username"
+                                   onKeyUp="addUsername(value)"
+                                   data-placement="top"
+                                   data-content="用户名输入有误，请输入以2-6位英文或汉字组成用户名"
+                                   data-animation="true"
+                                   id="recipiet-nae">
+                            <span class="userSpan" style="color:#ff003e;">用户名不能为空</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">*密码:</label>
+                            <input type="password"
+                                   class="form-control"
+                                   name="password"
+                                   id="recipient-name"
+                                   onkeyUP="passVerify(value)"
+                                   data-placement="top"
+                                   data-content="密码输入有误，请输入以6-20位以字母和数字组成的密码"
+                                   data-animation="true"
+                            >
+                            <span class="passSpan" style="color:#ff003e;">密码不能为空</span>
+                        </div>
+
+                        <label> 职位：
+                            <select class="form-control" name="position" id="addPosition">
+                                <option name="position">员工</option>
+                            </select>
+                        </label>
+                        <label> 所属部门：
+                            <select class="form-control" name="section" id="addSelect">
+
+
+                                <option name="section">
+                                    <%- result[0].section%>
+                                </option>
+
+                            </select>
+                        </label>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" id="modalBtn" data-toggle="modal"
+                                    name='addUser'
+                                    data-target="#myModal2" onclick="addUserModal()">确认
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         style="box-shadow: 3px 3px 5px #888888;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel2">新增用户</h4>
+                </div>
+                <div class="modal-body addUserModal">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button class="btn btn-danger" id="addUser" name="addUser" data-toggle="modal"
+                            data-target=".bs-example-modal-sm" onclick="addUser()">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel1">修改用户</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">用户ID:</label>
+                            <input type="number" class="form-control recipient-name-inp" readonly name="uId"
+                                   id="recipient-nae1">
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">*用户名:</label>
+                            <input type="text"
+                                   class="form-control username"
+                                   name="username"
+                                   onKeyUp="addUsername1(value)"
+                                   data-placement="top"
+                                   data-content="用户名输入有误，请输入以2-6位英文或汉字组成用户名"
+                                   data-animation="true"
+                                   id="recipiet-nae1">
+                            <span class="userSpan1" style="color:#ff003e;">用户名不能为空</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">*密码:</label>
+                            <input type="text"
+                                   class="form-control password"
+                                   name="password"
+                                   id="recipient-name1"
+                                   onkeyUP="passVerify1(value)"
+                                   data-placement="top"
+                                   data-content="密码输入有误，请输入以6-20位以字母和数字组成的密码"
+                                   data-animation="true"
+                            >
+                            <span class="passSpan1" style="color:#ff003e;">密码不能为空</span>
+                        </div>
+
+
+                        <label> 职位：
+                            <select class="form-control position" name="position" id="addPosition1">
+                                <option name="position">员工</option>
+                            </select>
+                        </label>
+                        <label> 所属部门：
+                            <select class="form-control section" name="section" id="addSelect1">
+
+
+                                <option name="section">
+                                    <%- result[0].section%>
+                                </option>
+
+                            </select>
+                        </label>
+
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-primary" id="modalBtn1" data-toggle="modal"
+                                    data-target="#myModal3" onclick="updateBtn()">确认
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         style="box-shadow: 3px 3px 5px #888888;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel3">修改用户</h4>
+                </div>
+                <div class="modal-body updateUserModal">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button class="btn btn-danger" id="updateUser" name="updateUser" data-toggle="modal"
+                            data-target=".bs-example-modal-sm" onclick="updateUser()">确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Button trigger modal -->
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal5" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel5">部门人数对比</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="main" style="width: 570px;height:400px;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+
+    btn_export =()=>{
+        var table1 = document.querySelector("#table1");
+        var sheet = XLSX.utils.table_to_sheet(table1);//将一个table对象转换成一个sheet对象
+        openDownloadDialog(sheet2blob(sheet),'下载.xlsx');
+    };
+    var upId = '';
+    $('.updateBtn').on('click', function () {
+
+        var id = JSON.stringify(this.parentElement.previousElementSibling.previousElementSibling.previousElementSibling.innerHTML);
+        upId = id;
+        $.ajax({
+            url: '/updateBtn',
+            data: {
+                id
+            },
+
+            success: function (data) {
+                // console.log(data)
+                data.result.map((item, index) => {
+
+                    $('#recipient-nae1').val(item.id);
+                    $('.username').val(item.username);
+                    $('.password').val(item.password);
+                    $('.position').val(item.position);
+                    $('.section').val(item.section);
+                })
+            }
+        });
+    });
+
+    var delId = [];
+
+    $('.del').on('click', function () {
+        var obj = {};
+        obj.id = this.parentElement.previousElementSibling.previousElementSibling.previousElementSibling.innerHTML;
+        delId.push(obj)
+    });
+
+    $('#Delete1').click(function () {
+        window.location.href = 'deleteSection?id=' + JSON.stringify(delId)
+    });
+
+
+    var maxId = '';
+
+    addUserBtn = () => {
+        $.ajax({
+            url: '/addUserBtn',
+            success: function (data) {
+                var result = data.result;
+
+                for (var i = 0; i < result.length; i++) {
+                    var maxId = result[i].id
+                }
+                document.getElementsByClassName('recipient-name-inp')[0].value = maxId * 1 + 1
+            }
+
+        })
+    };
+    var useFlag = false;
+    var passFlag = false;
+    var userSpanFlag = false;
+    var passSpanFlag = false;
+
+    var useFlag1 = true;
+    var passFlag1 = true;
+    var userSpanFlag1 = false;
+    var passSpanFlag1 = false;
+    addUsername = (value) => {
+        var reg = /^[A-Za-z\-\u4e00-\u9fa5]{2,5}$/;
+        if (reg.test(value)) {
+            $('#recipiet-nae').popover('destroy').css({borderColor: "#3bff17"});
+            useFlag = true;
+            $('.userSpan').hide();
+        } else {
+            $('#recipiet-nae').popover('show').css({borderColor: "#ff000d"});
+            useFlag = false;
+        }
+
+    };
+
+
+    passVerify = (value) => {
+        var reg = /^(\w){6,20}$/ig;
+
+        if (reg.test(value)) {
+            $('#recipient-name').popover('destroy').css({borderColor: "#00ff34"});
+            $('.passSpan').hide();
+            passFlag = true
+        } else {
+            $('#recipient-name').popover('show').css({borderColor: "#ff000d"});
+            passFlag = false
+        }
+    };
+
+
+    addUsername1 = (value) => {
+        var reg = /^[A-Za-z\-\u4e00-\u9fa5]{2,5}$/;
+        if (reg.test(value)) {
+            $('#recipiet-nae').popover('destroy').css({borderColor: "#3bff17"});
+            useFlag1 = true;
+            $('.userSpan1').hide();
+        } else {
+            $('#recipiet-nae').popover('show').css({borderColor: "#ff000d"});
+            useFlag1 = false;
+        }
+
+    };
+
+
+    passVerify1 = (value) => {
+        var reg = /^(\w){6,20}$/ig;
+
+        if (reg.test(value)) {
+            $('#recipient-name').popover('destroy').css({borderColor: "#00ff34"});
+            $('.passSpan1').hide();
+            passFlag1 = true
+        } else {
+            $('#recipient-name').popover('show').css({borderColor: "#ff000d"});
+            passFlag1 = false
+        }
+    };
+
+    $('.userSpan').hide();
+    $('.passSpan').hide();
+    $('.userSpan1').hide();
+    $('.passSpan1').hide();
+
+
+    addUserModal = () => {
+
+
+        if ($('#recipiet-nae').val() === "") {
+            userSpanFlag = false
+            $('.userSpan').show();
+        } else {
+            userSpanFlag = true
+        }
+
+        if ($('#recipient-name').val() === "") {
+            passSpanFlag = false;
+            $('.passSpan').show();
+        } else {
+            passSpanFlag = true
+        }
+
+
+        if (useFlag === true && passFlag === true && userSpanFlag === true && passSpanFlag === true) {
+
+            if ($('#addPosition').val() === '部门主管') {
+
+                $.ajax({
+                    url: '/seekPosition',
+                    data: {
+                        section: JSON.stringify($('#addSelect').val()),
+                        position: JSON.stringify($('#addPosition').val())
+                    },
+
+                    success: function (data) {
+                        data.result.map((item, index) => {
+                            $('.addUserModal').html($('#addSelect').val() + '已有' + $('#addPosition').val() + item.username + ',' + '是否继续添加' + $('#recipiet-nae').val() + '为' + $('#addSelect').val() + $('#addPosition').val() + `<br>` + `<span style="color:#f00;">（继续添加将会替换原部门主管）</span>`)
+                        })
+
+                    }
+                });
+
+
+            } else {
+                $('.addUserModal').html('你确定将' + $('#recipiet-nae').val() + '添加为' + $('#addSelect').val() + $('#addPosition').val())
+
+            }
+        } else {
+
+            if (userSpanFlag === false && useFlag === false) {
+                $('.userSpan').show();
+            } else {
+                $('.userSpan').hide();
+            }
+            if (passSpanFlag === false && passFlag === false) {
+                $('.passSpan').show();
+            } else {
+                $('.passSpan').hide();
+            }
+            $('#myModalLabel2').html('错误提示');
+            $('.addUserModal').html('添加错误，请注意红色提示')
+        }
+    };
+
+
+    updateBtn = () => {
+        if ($('#recipiet-nae1').val() === "") {
+            userSpanFlag1 = false;
+            $('.userSpan').show();
+        } else {
+            userSpanFlag1 = true
+        }
+
+        if ($('#recipient-name1').val() === "") {
+            passSpanFlag1 = false;
+            $('.passSpan').show();
+        } else {
+            passSpanFlag1 = true
+        }
+
+        if (useFlag1 === true && passFlag1 === true && userSpanFlag1 === true && passSpanFlag1 === true) {
+
+            if ($('#addPosition1').val() === '部门主管') {
+
+                $.ajax({
+                    url: '/seekPosition',
+                    data: {
+                        section: JSON.stringify($('#addSelect1').val()),
+                        position: JSON.stringify($('#addPosition1').val())
+                    },
+
+                    success: function (data) {
+                        data.result.map((item, index) => {
+                            $('.updateUserModal').html($('#addSelect1').val() + '已有' + $('#addPosition1').val() + item.username + ',' + '是否继续修改' + $('#recipiet-nae1').val() + '为' + $('#addSelect1').val() + $('#addPosition1').val() + `<br>` + `<span style="color:#f00;">（继续修改将会替换原部门主管）</span>`)
+                        })
+
+                    }
+                });
+
+
+            } else {
+                $('.updateUserModal').html('您确定修改用户' + $('#recipiet-nae1').val() + '吗？')
+
+            }
+
+
+        } else {
+
+            if (userSpanFlag1 === false && useFlag1 === false) {
+                $('.userSpan1').show();
+            } else {
+                $('.userSpan1').hide();
+            }
+            if (passSpanFlag1 === false && passFlag1 === false) {
+                $('.passSpan1').show();
+            } else {
+                $('.passSpan1').hide();
+            }
+            $('#myModalLabel3').html('错误提示');
+            $('.updateUserModal').html('添加错误，请注意红色提示!!!')
+        }
+    };
+
+    updateUser = () => {
+        window.location.href = 'updateUserManager?id=' + $('#recipient-nae1').val() + '&username=' + $('#recipiet-nae1').val() + '&password=' + $('#recipient-name1').val() + '&section=' + $('#addSelect1').val() + '&position=' + $('#addPosition1').val()
+    };
+
+    addUser = () => {
+        if (useFlag === true && passFlag === true && userSpanFlag === true && passSpanFlag === true) {
+            window.location.href = 'addUserManager?username=' + $('#recipiet-nae').val() + '&password=' + $('#recipient-name').val() + '&position=' + $('#addPosition').val() + "&section=" + $('#addSelect').val() + '&id=' + $('#recipient-nae').val();
+        } else {
+            if (userSpanFlag === false && useFlag === false) {
+                $('.userSpan').show();
+            } else {
+                $('.userSpan').hide();
+            }
+            if (passSpanFlag === false && passFlag === false) {
+                $('.passSpan').show();
+            } else {
+                $('.passSpan').hide();
+            }
+            $('#myModal2').modal('hide');
+        }
+
+
+    };
+
+    $(function () {
+
+        $("button[name='Delete']").attr("disabled", true);
+        $("#CheckAll").bind("click", function () {
+            $("input[name='Check[]']").prop("checked", this.checked);
+            //显示删除按钮
+            if (this.checked == true) {
+                $("button[name='Delete']").attr("disabled", false);
+            } else {
+                $("button[name='Delete']").attr("disabled", true);
+            }
+        });
+
+
+        //批量删除
+        $("#Delete").click(function () {
+
+            var checks = $("input[name='Check[]']:checked");
+            if (checks.length === 0) {
+                return false;
+            }
+            //将获取的值存入数组
+            var checkData = [];
+            checks.each(function () {
+                var obj = {};
+                obj.id = $(this).val();
+                checkData.push(obj);
+            });
+            //提交数据到后台进行删除
+            window.location.href = 'deleteSection?id=' + JSON.stringify(checkData)
+
+        });
+
+        var Alllen = $("input:checkbox").length - 1; //总个数减一 3
+        //当所有复选框选中时,全选勾选;当不是所有复选框选中时,全选不勾选.只要有其中一个复选框选中,删除按钮显示
+        $("input[name='Check[]']").on("change", function () {
+            var len = $("input[name='Check[]']:checkbox:checked").length;
+            if (len == Alllen) {
+                //全选
+                $('#CheckAll').prop('checked', true);
+                $("button[name='Delete']").attr("disabled", false);
+            } else {
+                $('#CheckAll').prop('checked', false);//小于3的时候全选框不勾选
+                if (len >= 1) {
+                    $("button[name='Delete']").attr("disabled", false);
+                } else {
+                    $("button[name='Delete']").attr("disabled", true);
+                }
+            }
+        });
+    });
+
+    seek = () => {
+        window.location.href = 'manager?seek=' + $('#seekInp').val();
+    };
+
+
+    $('#seekInp').keydown(function (e) {
+        if (e.keyCode == 13) {
+            window.location.href = 'manager?seek=' + $('#seekInp').val();
+        }
+
+    })
+
+
+    //ECharts
+
+    var myChart = echarts.init(document.getElementById('main'));
+    // 显示标题，图例和空的坐标轴
+    myChart.setOption({
+        title: {
+            text: '部门人数对比'
+        },
+        tooltip: {},
+        legend: {
+            data: ['人数']
+        },
+        xAxis: {
+            data: []
+        },
+        yAxis: {},
+        series: [{
+            name: '人数',
+            type: 'bar',
+            data: []
+        }]
+    });
+
+    myChart.showLoading();    //数据加载完之前先显示一段简单的loading动画
+
+    var names = [];    //类别数组（实际用来盛放X轴坐标值）
+    var nums = [];    //销量数组（实际用来盛放Y坐标值）
+
+    $.ajax({
+        type: "post",
+        async: true,            //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）
+        url: "/ec",    //请求发送到TestServlet处
+        data: {},
+        dataType: "json",        //返回数据形式为json
+        success: function (result) {
+            //console.log(result)
+            //请求成功时执行该函数内容，result即为服务器返回的json对象
+            var results = result.result;
+
+            if (results) {
+                var arr = [];
+                var _res = [];
+                // for (var i = 0; i < results.length; i++) {
+                //     names.push(results[i].section);    //挨个取出类别并填入类别数组
+                // }
+                for (var i = 0; i < results.length; i++) {
+                    arr.push(results[i].section);    //挨个取出销量并填入销量数组
+                }
+
+                arr.sort();
+                for (var i = 0; i < arr.length;) {
+                    var count = 0;
+                    for (var j = i; j < arr.length; j++) {
+                        if (arr[i] === arr[j]) {
+                            count++;
+                        }
+                    }
+                    _res.push([arr[i], count]);
+                    i += count;
+                }
+
+                //_res 二维数维中保存了 值和值的重复数
+
+                for (var i = 0; i < _res.length; i++) {
+                    // console.log(_res[i][0] + "重复次数:" + _res[i][1]);
+                    nums.push(_res[i][1]);
+                    names.push(_res[i][0]);
+
+                }
+                myChart.hideLoading();      //隐藏加载动画
+                myChart.setOption({        //加载数据图表
+                    xAxis: {
+                        data: names
+                    },
+                    series: [{
+                        // 根据名字对应到相应的系列
+                        name: '人数',
+                        data: nums
+                    }]
+                });
+
+            }
+
+        },
+        error: function (errorMsg) {
+            //请求失败时执行该函数
+            alert("图表请求数据失败!");
+            myChart.hideLoading();
+        }
+    })
+
+
+</script>
+</html>

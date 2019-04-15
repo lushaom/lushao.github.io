@@ -1,0 +1,17 @@
+.header{
+    width: 100%;
+    height: 60px;
+    background-color:#00B7FF;
+}
+
+.headerUl{
+    width: 200px;
+    margin: auto;
+    text-align: center;
+    overflow: hidden;
+}
+.headerUl li{
+    width: 100px;
+    float: left;
+
+}

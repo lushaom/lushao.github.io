@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <%- include bring %>
+    <%- include ad %>
+</head>
+<body>
+
+<%- include("headers",{titles:'staff'}) %>
+
+<div style="width: 80%;margin: auto;">
+    <div style="width: 60%;margin: auto;" >
+        <button id="btn" class="btn btn-primary btn-lg" onclick="btn_export()">导出export</button>
+       <table class="table table-bordered" id="table1" style="text-align: center;">
+           <tr>
+               <td style="font-weight: bold;">用户ID</td>
+               <td><%- arr.id %></td>
+           </tr>
+           <tr>
+               <td style="font-weight: bold;">用户名</td>
+               <td><%- arr.username %></td>
+           </tr>
+           <tr>
+               <td style="font-weight: bold;">所属部门</td>
+               <td><%- arr.section %></td>
+           </tr>
+           <tr>
+               <td style="font-weight: bold;">职位</td>
+               <td><%- arr.position %></td>
+           </tr>
+           <tr>
+               <td style="font-weight: bold;">手机号</td>
+               <td><%- arr.phone %></td>
+           </tr>
+       </table>
+
+    </div>
+</div>
+
+</body>
+<script>
+    btn_export =()=>{
+        var table1 = document.querySelector("#table1");
+        var sheet = XLSX.utils.table_to_sheet(table1);//将一个table对象转换成一个sheet对象
+        openDownloadDialog(sheet2blob(sheet),'下载.xlsx');
+    };
+</script>
+</html>
